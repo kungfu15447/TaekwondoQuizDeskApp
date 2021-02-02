@@ -1,28 +1,27 @@
 package view
 
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import model.BeltGrades
+import model.Models
 import tornadofx.*
 
 class Main: View() {
     var lab = label()
-    var gradeComboBox = combobox<String>()
+    var gradeComboBox = combobox<Models.BeltGrade>()
     var amountOfQComboBox = combobox<Number>()
     var startQuizButton = button()
-    var beltGrades: ObservableList<String> = FXCollections.observableArrayList<String>(
-            "10. Kup",
-            "9. Kup",
-            "8. Kup",
-            "7. Kup"
-    )
+    var beltGrades: ObservableList<Models.BeltGrade> = BeltGrades.getBeltGrades()
     var questionAmount: ObservableList<Number> = FXCollections.observableArrayList<Number>(
             10,
             20,
             30
     )
-    var selectedGrade = SimpleStringProperty()
+    var selectedGrade = SimpleObjectProperty<Models.BeltGrade>()
+
     var selectedAmount = SimpleIntegerProperty()
     override val root = vbox {
         prefHeight = 500.0
@@ -36,12 +35,13 @@ class Main: View() {
             bindSelected(selectedGrade)
             value = beltGrades[0]
             items = beltGrades
+            cellFormat {
+                text = it.title
+            }
+
         }
 
         amountOfQComboBox = combobox {
-            label {
-                text = "Spørgsmål: "
-            }
             bindSelected(selectedAmount)
             value = questionAmount[0]
             items = questionAmount
@@ -57,7 +57,7 @@ class Main: View() {
 
     init {
         selectedGrade.onChange {
-            println("Selected grade: " + selectedGrade.value)
+            println("Selected grade: " + selectedGrade.value.title)
         }
         selectedAmount.onChange {
             println("Selected amount " + selectedAmount.value)
